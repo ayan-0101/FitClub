@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './Header.css'
 import Logo from '../../assets/logo.png'
 import Bars from '../../assets/bars.png'
@@ -7,8 +7,23 @@ import { Link } from 'react-scroll'
 const Header = () => {
 
   const mobile = window.innerWidth <= 768 ? true : false
-  const [menuOpened, setMenuOpened] = useState(false)
+  const [menuOpened, setMenuOpened] = useState(false);
+  const menuRef = useRef(null);     
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpened(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+  
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [menuOpened]);
+  
   return (
 
     <div>
@@ -29,7 +44,7 @@ const Header = () => {
               <img src={Bars} alt='' style={{ width: '1.5rem', height: '1.5rem' }} />
             </div>
           ) :
-            <ul className='header-menu'>
+            <ul className='header-menu' ref={menuRef}>
               <li><Link
                 onClick={() => { setMenuOpened(false) }}
                 activeClass='active'
